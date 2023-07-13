@@ -75,9 +75,7 @@ public class WxPayConfig {
     private CloseableHttpClient v3HttpClient;
 
     public CloseableHttpClient initV3HttpClient() throws PayException {
-        if (StrUtil.isBlank(this.getPrivateKeyPath())) {
-            throw new PayException("apiclient_key.pem证书未配置，请检查");
-        }
+        validConfig();
 
         try {
             InputStream keyInputStream = this.loadConfigInputStream(this.getPrivateKeyPath());
@@ -104,6 +102,24 @@ public class WxPayConfig {
             return httpClient;
         } catch (Exception e) {
             throw new PayException("微信v3HttpClient请求构造失败", e);
+        }
+    }
+
+    private void validConfig() throws PayException {
+        if (StrUtil.isBlank(this.getAppId())) {
+            throw new PayException("appId未配置，请检查");
+        }
+        if (StrUtil.isBlank(this.getMchId())) {
+            throw new PayException("mchId未配置，请检查");
+        }
+        if (StrUtil.isBlank(this.getApiV3Key())) {
+            throw new PayException("apiV3Key未配置，请检查");
+        }
+        if (StrUtil.isBlank(this.getPrivateKeyPath())) {
+            throw new PayException("apiclient_key.pem证书未配置，请检查");
+        }
+        if (StrUtil.isBlank(this.getPrivateCertPath())) {
+            throw new PayException("apiclient_cert.pem证书未配置，请检查");
         }
     }
 
