@@ -95,9 +95,13 @@ public class DemoService {
         // 构建请求参数
         WxPayUnifiedOrderV3Request wxPayUnifiedOrderV3Request = generateRequest();
         // v3统一下单支付
-        T response = wxPayService.createOrderV3(WxTradeTypeEnum.H5, wxPayUnifiedOrderV3Request);
-        // remove thread_local
-        WxPayConfigHolder.remove();
+        T response;
+        try {
+            response = wxPayService.createOrderV3(WxTradeTypeEnum.H5, wxPayUnifiedOrderV3Request);
+        } finally {
+            // remove thread_local
+            WxPayConfigHolder.remove();
+        }
         return response;
     }
 }
