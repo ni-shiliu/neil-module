@@ -1,4 +1,4 @@
-package com.neil.pay.request;
+package com.neil.pay.wx.request;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
@@ -28,7 +28,7 @@ public class WxPayUnifiedOrderV3Request implements Serializable {
      *  示例值：wxd678efh567hg6787
      */
     @SerializedName(value = "appid")
-    protected String appid;
+    protected String appId;
 
     /**
      * 字段名：直连商户号
@@ -39,7 +39,7 @@ public class WxPayUnifiedOrderV3Request implements Serializable {
      *  示例值：1230000109
      */
     @SerializedName(value = "mchid")
-    protected String mchid;
+    protected String mchId;
 
     /**
      * 字段名：商品描述
@@ -209,7 +209,7 @@ public class WxPayUnifiedOrderV3Request implements Serializable {
          *  示例值：oUpF8uMuAJO_M2pxb1Q9zNjWeS6o
          */
         @SerializedName(value = "openid")
-        private String openid;
+        private String openId;
     }
 
     @Data
@@ -278,7 +278,7 @@ public class WxPayUnifiedOrderV3Request implements Serializable {
          *  示例值：1001
          */
         @SerializedName(value = "wechatpay_goods_id")
-        private String wechatpayGoodsId;
+        private String wechatPayGoodsId;
 
         /**
          * 字段名：商品名称

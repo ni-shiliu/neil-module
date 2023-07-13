@@ -1,4 +1,4 @@
-package com.neil.pay.enums;
+package com.neil.pay.wx.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
