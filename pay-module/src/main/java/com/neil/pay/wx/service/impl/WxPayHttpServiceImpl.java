@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -56,6 +57,48 @@ public class WxPayHttpServiceImpl extends BaseWxPayService {
             throw (e instanceof PayException) ? (PayException) e : new PayException(e.getMessage(), e);
         } finally {
             httpPost.releaseConnection();
+        }
+    }
+
+    @Override
+    public String getV3(String url) throws PayException {
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.addHeader(ACCEPT, APPLICATION_JSON);
+        httpGet.addHeader(CONTENT_TYPE, APPLICATION_JSON);
+        return this.requestV3(url, httpGet);
+    }
+
+    @Override
+    public String requestV3(String url, HttpGet httpRequest) throws PayException {
+        httpRequest.setConfig(RequestConfig.custom()
+                .setConnectionRequestTimeout(this.getConfig().getHttpConnectionTimeout())
+                .setConnectTimeout(this.getConfig().getHttpConnectionTimeout())
+                .setSocketTimeout(this.getConfig().getHttpTimeout())
+                .build());
+
+        CloseableHttpClient httpClient = this.createV3Client();
+        try (CloseableHttpResponse response = httpClient.execute(httpRequest)) {
+            //v3已经改为通过状态码判断200 204 成功
+            int statusCode = response.getStatusLine().getStatusCode();
+            //post方法有可能会没有返回值的情况
+            String responseString = null;
+            if (response.getEntity() != null) {
+                responseString = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            }
+
+            if (HttpStatus.SC_OK == statusCode || HttpStatus.SC_NO_CONTENT == statusCode) {
+                log.info("\n【请求地址】：{}\n【响应数据】：{}", url, responseString);
+                return responseString;
+            }
+
+            //有错误提示信息返回
+            JsonObject jsonObject = GsonParser.parse(responseString);
+            throw convertException(jsonObject);
+        } catch (Exception e) {
+            log.error("\n【请求地址】：{}\n【异常信息】：{}", url, e.getMessage());
+            throw (e instanceof PayException) ? (PayException) e : new PayException(e.getMessage(), e);
+        } finally {
+            httpRequest.releaseConnection();
         }
     }
 

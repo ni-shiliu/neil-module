@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
-public class WxPayUnifiedOrderV3Request implements Serializable {
+public class WxPayUnifiedOrderV3Req implements Serializable {
 
     private static final long serialVersionUID = 8454403564205151053L;
 

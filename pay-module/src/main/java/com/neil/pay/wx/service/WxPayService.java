@@ -3,8 +3,11 @@ package com.neil.pay.wx.service;
 import com.neil.pay.exception.PayException;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
-import com.neil.pay.wx.request.WxPayUnifiedOrderV3Request;
+import com.neil.pay.wx.request.WxPayOrderQueryV3Req;
+import com.neil.pay.wx.request.WxPayUnifiedOrderV3Req;
+import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
 import com.neil.pay.wx.result.WxPayUnifiedOrderV3Result;
+import org.apache.http.client.methods.HttpGet;
 
 import java.util.Map;
 
@@ -37,7 +40,7 @@ public interface WxPayService {
      * @param request
      * @return
      */
-    WxPayUnifiedOrderV3Result unifiedOrderV3(WxTradeTypeEnum tradeTypeEnum, WxPayUnifiedOrderV3Request request) throws PayException;
+    WxPayUnifiedOrderV3Result unifiedOrderV3(WxTradeTypeEnum tradeTypeEnum, WxPayUnifiedOrderV3Req request) throws PayException;
 
     /**
      * 调用微信统一下单api，并返回对应支付所需参数
@@ -46,10 +49,15 @@ public interface WxPayService {
      * @return
      * @param <T>
      */
-    <T> T createOrderV3(WxTradeTypeEnum tradeTypeEnum, WxPayUnifiedOrderV3Request request) throws PayException;
+    <T> T createOrderV3(WxTradeTypeEnum tradeTypeEnum, WxPayUnifiedOrderV3Req request) throws PayException;
 
     String getPayBaseUrl();
 
     String postV3(String url, String request) throws PayException;
 
+    WxPayOrderQueryV3Result queryOrderV3(WxPayOrderQueryV3Req req) throws PayException;
+
+    String getV3(String url) throws PayException;
+
+    String requestV3(String url, HttpGet httpGet) throws PayException;
 }
