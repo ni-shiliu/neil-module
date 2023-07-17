@@ -12,6 +12,11 @@ import lombok.Getter;
 public enum WxTradeTypeEnum {
 
     /**
+     * JSAPI 或 小程序
+     */
+    JSAPI("/v3/pay/transactions/jsapi", "/v3/combine-transactions/jsapi", "/v3/pay/partner/transactions/jsapi"),
+
+    /**
      * H5
      */
     H5("/v3/pay/transactions/h5", "/v3/combine-transactions/h5", "/v3/pay/partner/transactions/h5");
