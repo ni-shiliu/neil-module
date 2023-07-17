@@ -5,12 +5,10 @@ import com.neil.pay.exception.PayException;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.config.WxPayConfigHolder;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
-import com.neil.pay.wx.request.WxPayOrderCloseV3Req;
-import com.neil.pay.wx.request.WxPayOrderQueryV3Req;
-import com.neil.pay.wx.request.WxPayOrderRefundV3Req;
-import com.neil.pay.wx.request.WxPayUnifiedOrderV3Req;
+import com.neil.pay.wx.request.*;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
 import com.neil.pay.wx.result.WxPayOrderRefundV3Result;
+import com.neil.pay.wx.result.WxPayRefundQueryV3Result;
 import com.neil.pay.wx.result.WxPayUnifiedOrderV3Result;
 import com.neil.pay.wx.service.WxPayService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +35,8 @@ public abstract class BaseWxPayService implements WxPayService {
     private static final String QUERY_ORDER_TRADE_NO_V3_FORMAT = "%s/v3/pay/transactions/out-trade-no/%s";
     private static final String QUERY_ORDER_TRANSACTION_ID_V3_FORMAT = "%s/v3/pay/transactions/id/%s";
     private static final String CLOSE_ORDER_V3_FORMAT = "%s/v3/pay/transactions/out-trade-no/%s/close";
-    private static final String REFUND_ORDER_V3_FORMAT = "%s/v3/refund/domestic/refunds";
+    private static final String REFUND_V3_FORMAT = "%s/v3/refund/domestic/refunds";
+    private static final String REFUND_QUERY_V3_FORMAT = "%s/v3/refund/domestic/refunds/%s";
 
 
     @Override
@@ -115,8 +114,15 @@ public abstract class BaseWxPayService implements WxPayService {
 
     @Override
     public WxPayOrderRefundV3Result refundV3(WxPayOrderRefundV3Req req) throws PayException {
-        String url = String.format(REFUND_ORDER_V3_FORMAT, this.getPayBaseUrl());
+        String url = String.format(REFUND_V3_FORMAT, this.getPayBaseUrl());
         String response = this.postV3(url, GSON.toJson(req));
         return GSON.fromJson(response, WxPayOrderRefundV3Result.class);
+    }
+
+    @Override
+    public WxPayRefundQueryV3Result refundQueryV3(WxPayRefundQueryV3Req req) throws PayException {
+        String url = String.format(REFUND_QUERY_V3_FORMAT, this.getPayBaseUrl(), req.getOutRefundNo());
+        String response = this.getV3(url);
+        return GSON.fromJson(response, WxPayRefundQueryV3Result.class);
     }
 }

@@ -3,12 +3,10 @@ package com.neil.pay.wx.service;
 import com.neil.pay.exception.PayException;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
-import com.neil.pay.wx.request.WxPayOrderCloseV3Req;
-import com.neil.pay.wx.request.WxPayOrderQueryV3Req;
-import com.neil.pay.wx.request.WxPayOrderRefundV3Req;
-import com.neil.pay.wx.request.WxPayUnifiedOrderV3Req;
+import com.neil.pay.wx.request.*;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
 import com.neil.pay.wx.result.WxPayOrderRefundV3Result;
+import com.neil.pay.wx.result.WxPayRefundQueryV3Result;
 import com.neil.pay.wx.result.WxPayUnifiedOrderV3Result;
 import org.apache.http.client.methods.HttpGet;
 
@@ -67,4 +65,6 @@ public interface WxPayService {
     void closeOrderV3(WxPayOrderCloseV3Req req) throws PayException;
 
     WxPayOrderRefundV3Result refundV3(WxPayOrderRefundV3Req req) throws PayException;
+
+    WxPayRefundQueryV3Result refundQueryV3(WxPayRefundQueryV3Req req) throws PayException;
 }
