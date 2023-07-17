@@ -3,6 +3,7 @@ package com.neil.pay.wx.service;
 import com.neil.pay.exception.PayException;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
+import com.neil.pay.wx.request.WxPayOrderCloseV3Req;
 import com.neil.pay.wx.request.WxPayOrderQueryV3Req;
 import com.neil.pay.wx.request.WxPayUnifiedOrderV3Req;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
@@ -60,4 +61,6 @@ public interface WxPayService {
     String getV3(String url) throws PayException;
 
     String requestV3(String url, HttpGet httpGet) throws PayException;
+
+    void closeOrderV3(WxPayOrderCloseV3Req req) throws PayException;
 }

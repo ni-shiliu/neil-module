@@ -5,6 +5,7 @@ import com.neil.pay.exception.PayException;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.config.WxPayConfigHolder;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
+import com.neil.pay.wx.request.WxPayOrderCloseV3Req;
 import com.neil.pay.wx.request.WxPayOrderQueryV3Req;
 import com.neil.pay.wx.request.WxPayUnifiedOrderV3Req;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
@@ -31,6 +32,9 @@ public abstract class BaseWxPayService implements WxPayService {
     protected Map<String, WxPayConfig> configMap;
 
     private static final String SANDBOX_URL = "/xdc/apiv2sandbox";
+    private static final String QUERY_ORDER_TRADE_NO_V3_FORMAT = "%s/v3/pay/transactions/out-trade-no/%s";
+    private static final String QUERY_ORDER_TRANSACTION_ID_V3_FORMAT = "%s/v3/pay/transactions/id/%s";
+    private static final String CLOSE_ORDER_V3_FORMAT = "%s/v3/pay/transactions/out-trade-no/%s/close";
 
 
     @Override
@@ -88,13 +92,21 @@ public abstract class BaseWxPayService implements WxPayService {
         if (StringUtils.isBlank(req.getMchid())) {
             req.setMchid(this.getConfig().getMchId());
         }
-        String url = String.format("%s/v3/pay/transactions/out-trade-no/%s", this.getPayBaseUrl(), req.getOutTradeNo());
+        String url = String.format(QUERY_ORDER_TRADE_NO_V3_FORMAT, this.getPayBaseUrl(), req.getOutTradeNo());
         if (Objects.isNull(req.getOutTradeNo())) {
-            url = String.format("%s/v3/pay/transactions/id/%s", this.getPayBaseUrl(), req.getTransactionId());
+            url = String.format(QUERY_ORDER_TRANSACTION_ID_V3_FORMAT, this.getPayBaseUrl(), req.getTransactionId());
         }
         String query = String.format("?mchid=%s", req.getMchid());
         String response = this.getV3(url + query);
         return GSON.fromJson(response, WxPayOrderQueryV3Result.class);
     }
 
+    @Override
+    public void closeOrderV3(WxPayOrderCloseV3Req req) throws PayException {
+        if (StringUtils.isBlank(req.getMchid())) {
+            req.setMchid(this.getConfig().getMchId());
+        }
+        String url = String.format(CLOSE_ORDER_V3_FORMAT, this.getPayBaseUrl(), req.getOutTradeNo());
+        this.postV3(url, GSON.toJson(req));
+    }
 }
