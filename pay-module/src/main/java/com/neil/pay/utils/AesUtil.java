@@ -4,6 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -41,6 +42,25 @@ public class AesUtil {
             cipher.updateAAD(associatedData);
             return new String(cipher.doFinal(Base64.getDecoder().decode(ciphertext)), StandardCharsets.UTF_8);
 
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new IllegalStateException(e);
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String decryptToString(String associatedData, String nonce, String ciphertext, String apiV3Key)
+            throws GeneralSecurityException, IOException {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+
+            SecretKeySpec key = new SecretKeySpec(apiV3Key.getBytes(), "AES");
+            GCMParameterSpec spec = new GCMParameterSpec(TAG_LENGTH_BIT, nonce.getBytes());
+
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+            cipher.updateAAD(associatedData.getBytes());
+
+            return new String(cipher.doFinal(Base64.getDecoder().decode(ciphertext)), StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new IllegalStateException(e);
         } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {

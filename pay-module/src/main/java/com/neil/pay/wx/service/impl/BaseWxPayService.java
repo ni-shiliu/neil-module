@@ -2,9 +2,14 @@ package com.neil.pay.wx.service.impl;
 
 import com.google.common.collect.Maps;
 import com.neil.pay.exception.PayException;
+import com.neil.pay.utils.AesUtil;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.config.WxPayConfigHolder;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
+import com.neil.pay.wx.notify.OriginNotifyResponse;
+import com.neil.pay.wx.notify.SignatureHeader;
+import com.neil.pay.wx.notify.WxPayBaseNotifyV3Result;
+import com.neil.pay.wx.notify.WxPayNotifyV3Result;
 import com.neil.pay.wx.request.*;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
 import com.neil.pay.wx.result.WxPayOrderRefundV3Result;
@@ -13,7 +18,9 @@ import com.neil.pay.wx.result.WxPayUnifiedOrderV3Result;
 import com.neil.pay.wx.service.WxPayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
@@ -124,5 +131,42 @@ public abstract class BaseWxPayService implements WxPayService {
         String url = String.format(REFUND_QUERY_V3_FORMAT, this.getPayBaseUrl(), req.getOutRefundNo());
         String response = this.getV3(url);
         return GSON.fromJson(response, WxPayRefundQueryV3Result.class);
+    }
+
+    @Override
+    public WxPayNotifyV3Result parseOrderNotifyV3Result(String notifyData, SignatureHeader header) throws PayException {
+        return this.baseParseOrderNotifyV3Result(notifyData, header, WxPayNotifyV3Result.class, WxPayNotifyV3Result.DecryptNotifyResult.class);
+    }
+
+    @Override
+    public <T extends WxPayBaseNotifyV3Result<E>, E> T baseParseOrderNotifyV3Result(String notifyData, SignatureHeader header, Class<T> resultType, Class<E> dataType) throws PayException {
+        if (Objects.nonNull(header) && !this.verifyNotifySign(header, notifyData)) {
+            throw new PayException("非法请求，头部信息验证失败");
+        }
+        OriginNotifyResponse response = GSON.fromJson(notifyData, OriginNotifyResponse.class);
+        OriginNotifyResponse.Resource resource = response.getResource();
+        String cipherText = resource.getCiphertext();
+        String associatedData = resource.getAssociatedData();
+        String nonce = resource.getNonce();
+        String apiV3Key = this.getConfig().getApiV3Key();
+        try {
+            String result = AesUtil.decryptToString(associatedData, nonce, cipherText, apiV3Key);
+            E decryptNotifyResult = GSON.fromJson(result, dataType);
+            T notifyResult = ConstructorUtils.invokeConstructor(resultType);
+            notifyResult.setRawData(response);
+            notifyResult.setResult(decryptNotifyResult);
+            return notifyResult;
+        } catch (Exception e) {
+            throw new PayException("解析报文异常！", e);
+        }
+    }
+
+    private boolean verifyNotifySign(SignatureHeader header, String data) {
+        String beforeSign = String.format("%s\n%s\n%s\n",
+                header.getTimeStamp(),
+                header.getNonce(),
+                data);
+        return this.getConfig().getVerifier().verify(header.getSerial(),
+                beforeSign.getBytes(StandardCharsets.UTF_8), header.getSignature());
     }
 }
