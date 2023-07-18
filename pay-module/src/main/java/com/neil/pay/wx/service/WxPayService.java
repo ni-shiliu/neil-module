@@ -6,6 +6,7 @@ import com.neil.pay.wx.enums.WxTradeTypeEnum;
 import com.neil.pay.wx.notify.SignatureHeader;
 import com.neil.pay.wx.notify.WxPayBaseNotifyV3Result;
 import com.neil.pay.wx.notify.WxPayNotifyV3Result;
+import com.neil.pay.wx.notify.WxPayRefundNotifyV3Result;
 import com.neil.pay.wx.request.*;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
 import com.neil.pay.wx.result.WxPayOrderRefundV3Result;
@@ -113,7 +114,6 @@ public interface WxPayService {
      */
     WxPayRefundQueryV3Result refundQueryV3(WxPayRefundQueryV3Req req) throws PayException;
 
-
     /**
      * 直连模式-解析支付通知
      * @param notifyData
@@ -124,7 +124,16 @@ public interface WxPayService {
     WxPayNotifyV3Result parseOrderNotifyV3Result(String notifyData, SignatureHeader header) throws PayException;
 
     /**
-     * 通用解析支付通知，支持直连模式和服务商模式
+     * 直连模式-解析退款通知
+     *
+     * @param notifyData
+     * @param header
+     * @return
+     */
+    WxPayRefundNotifyV3Result parseRefundNotifyV3Result(String notifyData, SignatureHeader header) throws PayException;
+
+    /**
+     * 通用解析支付、退款通知，支持直连模式和服务商模式
      *
      * @param notifyData 通知数据
      * @param header 通知头部数据，不传则表示不校验头

@@ -6,10 +6,7 @@ import com.neil.pay.utils.AesUtil;
 import com.neil.pay.wx.config.WxPayConfig;
 import com.neil.pay.wx.config.WxPayConfigHolder;
 import com.neil.pay.wx.enums.WxTradeTypeEnum;
-import com.neil.pay.wx.notify.OriginNotifyResponse;
-import com.neil.pay.wx.notify.SignatureHeader;
-import com.neil.pay.wx.notify.WxPayBaseNotifyV3Result;
-import com.neil.pay.wx.notify.WxPayNotifyV3Result;
+import com.neil.pay.wx.notify.*;
 import com.neil.pay.wx.request.*;
 import com.neil.pay.wx.result.WxPayOrderQueryV3Result;
 import com.neil.pay.wx.result.WxPayOrderRefundV3Result;
@@ -136,6 +133,11 @@ public abstract class BaseWxPayService implements WxPayService {
     @Override
     public WxPayNotifyV3Result parseOrderNotifyV3Result(String notifyData, SignatureHeader header) throws PayException {
         return this.baseParseOrderNotifyV3Result(notifyData, header, WxPayNotifyV3Result.class, WxPayNotifyV3Result.DecryptNotifyResult.class);
+    }
+
+    @Override
+    public WxPayRefundNotifyV3Result parseRefundNotifyV3Result(String notifyData, SignatureHeader header) throws PayException {
+        return this.baseParseOrderNotifyV3Result(notifyData, header, WxPayRefundNotifyV3Result.class, WxPayRefundNotifyV3Result.DecryptNotifyResult.class);
     }
 
     @Override
