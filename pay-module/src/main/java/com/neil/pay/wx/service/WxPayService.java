@@ -68,12 +68,35 @@ public interface WxPayService {
      * @param request
      * @return
      * @param <T>
+     * @throws PayException
      */
     <T> T createOrderV3(WxTradeTypeEnum tradeTypeEnum, WxPayUnifiedOrderV3Req request) throws PayException;
 
+    /**
+     * 获取微信baseUrl
+     *
+     * @return
+     */
     String getPayBaseUrl();
 
+    /**
+     * postV3
+     *
+     * @param url
+     * @param request
+     * @return
+     * @throws PayException
+     */
     String postV3(String url, String request) throws PayException;
+
+    /**
+     * getV3
+     *
+     * @param url
+     * @return
+     * @throws PayException
+     */
+    String getV3(String url) throws PayException;
 
     /**
      * v3订单查询
@@ -84,8 +107,14 @@ public interface WxPayService {
      */
     WxPayOrderQueryV3Result queryOrderV3(WxPayOrderQueryV3Req req) throws PayException;
 
-    String getV3(String url) throws PayException;
-
+    /**
+     * requestV3
+     *
+     * @param url
+     * @param httpGet
+     * @return
+     * @throws PayException
+     */
     String requestV3(String url, HttpGet httpGet) throws PayException;
 
     /**
@@ -129,6 +158,7 @@ public interface WxPayService {
      * @param notifyData
      * @param header
      * @return
+     * @throws PayException
      */
     WxPayRefundNotifyV3Result parseRefundNotifyV3Result(String notifyData, SignatureHeader header) throws PayException;
 
@@ -142,6 +172,7 @@ public interface WxPayService {
      * @return
      * @param <T>
      * @param <E>
+     * @throws PayException
      */
     <T extends WxPayBaseNotifyV3Result<E>, E> T baseParseOrderNotifyV3Result(String notifyData, SignatureHeader header, Class<T> resultType, Class<E> dataType) throws PayException;
 }
